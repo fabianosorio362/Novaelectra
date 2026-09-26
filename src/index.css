@@ -1,0 +1,290 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "DM Sans", sans-serif;
+  overflow-x: clip;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 25 95% 53%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --accent: 189 94% 43%;
+    --accent-foreground: 0 0% 100%;
+    
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 35 92% 55%;
+    --warning-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
+    
+    --price-gold: 43 77% 49%;
+    
+    --radius: 0.75rem;
+    
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Carousel Variables */
+    --carousel-slide-spacing: 1rem;
+    --carousel-slide-size: 85%;
+
+    /* Search Bar Variables */
+    --search-bg: 210 40% 96%;
+    --search-border: 214 32% 91%;
+    --search-focus-ring: 25 95% 53%;
+    --search-glow: 217 91% 60%;
+
+    /* Conoce Mas Section Tokens */
+    --conoce-bg: 204 100% 94%;
+    --conoce-fg: 201 96% 11%;
+    --conoce-icon-bg: 204 100% 86%;
+  }
+  
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 25 95% 53%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --accent: 189 94% 43%;
+    --accent-foreground: 0 0% 100%;
+    
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 35 92% 55%;
+    --warning-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 217 91% 60%;
+    
+    --price-gold: 43 77% 49%;
+    
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Search Bar Variables */
+    --search-bg: 217 33% 17%;
+    --search-border: 217 33% 17%;
+    --search-focus-ring: 25 95% 53%;
+    --search-glow: 217 91% 60%;
+
+    /* Conoce Mas Section Tokens */
+    --conoce-bg: 201 96% 11%;
+    --conoce-fg: 204 100% 94%;
+    --conoce-icon-bg: 201 90% 20%;
+  }
+
+  @media (min-width: 640px) {
+    :root {
+      --carousel-slide-size: 45%;
+    }
+  }
+
+  @media (min-width: 768px) {
+    :root {
+      --carousel-slide-size: 33.333%;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --carousel-slide-size: 25%;
+    }
+  }
+}
+
+@layer utilities {
+  /* Continuous Individual Item Scrolling */
+  @keyframes scroll-item {
+    0% {
+      transform: translateX(100vw);
+    }
+    100% {
+      transform: translateX(-100vw);
+    }
+  }
+
+  .animate-scroll-item {
+    animation-name: scroll-item;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+}
+
+@layer components {
+  .glass-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+  
+  .vibrant-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 50%, hsl(var(--accent)) 100%);
+  }
+  
+  .vibrant-text-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .price-premium {
+    @apply text-[hsl(var(--price-gold))] font-semibold;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Search Bar Components */
+  .search-bar-container {
+    @apply relative flex items-center w-full rounded-full transition-all duration-300;
+    background-color: hsl(var(--search-bg));
+    border: 1px solid hsl(var(--search-border));
+  }
+  
+  .search-bar-container:focus-within {
+    background-color: hsl(var(--background));
+    border-color: hsl(var(--search-focus-ring));
+    box-shadow: 0 0 20px hsl(var(--search-glow) / 0.25), inset 0 0 5px hsl(var(--primary) / 0.1);
+  }
+  
+  .search-input {
+    @apply w-full bg-transparent border-none outline-none px-3 py-2 text-sm text-foreground transition-all duration-300;
+  }
+  
+  .search-input::placeholder {
+    @apply text-muted-foreground/80 font-medium;
+  }
+  
+  .search-icon {
+    @apply h-[18px] w-[18px] ml-4 transition-colors duration-300;
+    color: hsl(var(--muted-foreground));
+  }
+  
+  .search-bar-container:focus-within .search-icon {
+    color: hsl(var(--primary));
+  }
+
+  /* Carousel specific utilities */
+  .embla__slide {
+    flex: 0 0 var(--carousel-slide-size);
+    min-width: 0;
+    padding-left: var(--carousel-slide-spacing);
+  }
+
+  /* Conoce Mas Components */
+  .conoce-card {
+    @apply bg-[hsl(var(--conoce-bg))] text-[hsl(var(--conoce-fg))] rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-transparent hover:border-[hsl(var(--primary)/0.2)] hover:-translate-y-1 flex flex-col h-full;
+  }
+  
+  .conoce-icon-wrapper {
+    @apply w-14 h-14 rounded-xl bg-[hsl(var(--conoce-icon-bg))] flex items-center justify-center mb-5 text-[hsl(var(--primary))] transition-transform duration-300 group-hover:scale-110;
+  }
+}
+
+/* Animations */
+@keyframes slideFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateX(30px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes dotActivate {
+  0% {
+    width: 0.75rem;
+    background-color: hsl(var(--primary) / 0.3);
+  }
+  100% {
+    width: 2.5rem;
+    background-color: hsl(var(--primary));
+  }
+}
+
+@keyframes dotDeactivate {
+  0% {
+    width: 2.5rem;
+    background-color: hsl(var(--primary));
+  }
+  100% {
+    width: 0.75rem;
+    background-color: hsl(var(--primary) / 0.3);
+  }
+}
+
+.animate-slide-in {
+  animation: slideFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-dot-activate {
+  animation: dotActivate 0.3s ease-out forwards;
+}
+
+.animate-dot-deactivate {
+  animation: dotDeactivate 0.3s ease-out forwards;
+}
