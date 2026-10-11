@@ -1,47 +1,57 @@
-const EVENT = 'session-journal:event';
+import { postToParent } from '../visual-editor/utils/parent-frame.js';
+
+const EVENT = 'sessionJournalEvents';
 const MAX_TEXT = 2000;
 const MAX_BATCH = 50;
-const FLUSH_INTERVAL_MS = 1000;
+// Errors must land before the AI reads the journal after a reload; the rest is batched to limit backend writes.
+const ERROR_FLUSH_MS = 1000;
+const FLUSH_INTERVAL_MS = 10000;
+const ERROR_KINDS = new Set(['console.error', 'window.error', 'unhandledrejection', 'root.empty', 'network.error']);
+
+const enabled = window.parent !== window;
 
 let queue = [];
 let flushTimer = null;
-let connected = false;
+let flushAt = Infinity;
 
 function flushQueue() {
   if (flushTimer) {
     clearTimeout(flushTimer);
     flushTimer = null;
   }
-  if (!queue.length || !import.meta.hot || !connected) {
+  flushAt = Infinity;
+  if (!queue.length) {
     return;
   }
-  const batch = queue;
+  const pending = queue;
   queue = [];
-  try {
-    import.meta.hot.send(EVENT, { batch });
-  } catch {}
+  for (let i = 0; i < pending.length; i += MAX_BATCH) {
+    postToParent(EVENT, { events: pending.slice(i, i + MAX_BATCH) });
+  }
+}
+
+function scheduleFlush(delayMs) {
+  const at = Date.now() + delayMs;
+  if (at >= flushAt) {
+    return;
+  }
+  if (flushTimer) {
+    clearTimeout(flushTimer);
+  }
+  flushAt = at;
+  flushTimer = setTimeout(flushQueue, delayMs);
 }
 
 function send(kind, data) {
-  if (!import.meta.hot) {
+  if (!enabled) {
     return;
   }
   queue.push({ kind, t: Date.now(), ...data });
-  if (connected && queue.length >= MAX_BATCH) {
+  if (queue.length >= MAX_BATCH) {
     flushQueue();
-  } else if (!flushTimer) {
-    flushTimer = setTimeout(flushQueue, FLUSH_INTERVAL_MS);
+  } else {
+    scheduleFlush(ERROR_KINDS.has(kind) ? ERROR_FLUSH_MS : FLUSH_INTERVAL_MS);
   }
-}
-
-if (import.meta.hot) {
-  import.meta.hot.on('vite:ws:connect', () => {
-    connected = true;
-    flushQueue();
-  });
-  import.meta.hot.on('vite:ws:disconnect', () => {
-    connected = false;
-  });
 }
 
 document.addEventListener('visibilitychange', () => {

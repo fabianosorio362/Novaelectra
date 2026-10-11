@@ -25,11 +25,16 @@ const ProductCard = ({ product, index = 0 }) => {
     
     // Adapt hardcoded product structure to what useCart expects
     const cartProduct = { ...product, title: product.name };
+    const price = product.price || 0;
+    const currencyInfo = { code: 'COP', symbol: '$', decimal_digits: 0, template: 'COP $$1' };
     const variant = {
       id: product.id,
       title: 'Default',
-      price_in_cents: (product.price || 0) * 100,
-      currency_info: { code: 'COP', symbol: '$' },
+      price_in_cents: price,
+      sale_price_in_cents: price,
+      currency_info: currencyInfo,
+      price_formatted: `COP $${Number(price).toLocaleString('es-CO').replace(/,/g, '.')}`,
+      sale_price_formatted: `COP $${Number(price).toLocaleString('es-CO').replace(/,/g, '.')}`,
       manage_inventory: false
     };
 
@@ -72,6 +77,7 @@ const ProductCard = ({ product, index = 0 }) => {
           <img
             src={product?.image || placeholderImage}
             alt={product?.name || 'Producto'}
+            onError={(e) => { e.currentTarget.src = placeholderImage; }}
             className="w-full h-auto max-h-[180px] object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />

@@ -1,8 +1,11 @@
 const ECOMMERCE_API_URL = "https://api-ecommerce.hostinger.com";
-const ECOMMERCE_STORE_ID = "store_01KV0T265BTBSV9VBB9X7N65C6";
+const ECOMMERCE_STORE_ID = "scha_01M3XDJ9Z1JDBVP61ZYW1Z80RE";
 const DEFAULT_SEARCH_LIMIT = 15;
 const MAX_SEARCH_LIMIT = 200;
 const MAX_SEARCH_QUERY_LENGTH = 100;
+const DOMAIN_CHECKOUT_PATH = "/checkout/";
+const DOMAIN_CHECKOUT_MARKER = "data-hostinger-checkout-shell";
+const DOMAIN_CHECKOUT_PROBE_TIMEOUT_MS = 1500;
 
 export const formatCurrency = (priceInCents, currencyInfo) => {
   if (!currencyInfo || priceInCents === null || priceInCents === undefined) {
@@ -868,6 +871,27 @@ async function getCheckoutLanguage() {
   return data.store_owner?.language;
 }
 
+async function getDomainCheckoutUrl() {
+  const { protocol, origin } = window.location;
+
+  if (protocol !== "https:") {
+    return undefined;
+  }
+
+  try {
+    const response = await fetch(`${DOMAIN_CHECKOUT_PATH}?probe=${Date.now()}`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(DOMAIN_CHECKOUT_PROBE_TIMEOUT_MS),
+    });
+
+    return response.ok && (await response.text()).includes(DOMAIN_CHECKOUT_MARKER)
+      ? `${origin}${DOMAIN_CHECKOUT_PATH}`
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 /**
  * POST /store/{store_id}/checkout - Initialize Checkout Endpoint
  * @function initializeCheckout
@@ -875,6 +899,8 @@ async function getCheckoutLanguage() {
  * @operationId PostInitializeCheckout
  * @summary Initialize Checkout
  * @description Creates a payment session and returns a checkout URL. Shape: {@link InitializeCheckoutParams}.
+ * The URL is usually this site's own `/checkout/` page, which the platform serves —
+ * never create a route, page or file at `/checkout` itself.
  * @group Checkout
  *
  * @param {InitializeCheckoutParams} params - Request body fields (see typedefs for nested types)
@@ -921,8 +947,10 @@ export async function initializeCheckout({
   customer,
 }) {
   const url = `${ECOMMERCE_API_URL}/store/${ECOMMERCE_STORE_ID}/checkout`;
+  const languagePromise = getCheckoutLanguage().catch(() => "en");
+  const checkoutUrl = await getDomainCheckoutUrl();
 
-  const checkoutInitPromise = fetch(url, {
+  const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -931,16 +959,13 @@ export async function initializeCheckout({
       items,
       successUrl,
       cancelUrl,
+      checkoutUrl,
       locale,
       timeZone: getBrowserTimeZone(),
       customer,
     }),
   });
-
-  const [response, language] = await Promise.all([
-    checkoutInitPromise,
-    getCheckoutLanguage().catch(() => "en"),
-  ]);
+  const language = await languagePromise;
 
   if (!response.ok) {
     const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
